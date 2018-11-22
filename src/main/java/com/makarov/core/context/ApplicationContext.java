@@ -19,7 +19,15 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 /**
+ * Core class to represent application context;
+ * all beans contained in Map <beanName<String>, bean<Object>>
  *
+ * for interfaces annotated with {@link com.makarov.annotation.Repository}
+ * bean map returns proxy-object with {@link com.makarov.core.proxy.RepositoryInvocationHandler}
+ *
+ * In contrast to CGlib, JDK proxy implementation does not allow autowire proxy-object into bean property,
+ * so real bean instances are autowired as beans dependencies,
+ * and both getBean and getProxyBean implemented
  */
 public class ApplicationContext implements Context {
 
@@ -52,6 +60,10 @@ public class ApplicationContext implements Context {
         return bean;
     }
 
+    /**
+     * Because of JDK proxy constraints method returns bean proxy,
+     * but not its autowired bean dependencies are not proxy objects
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getBeanProxy(Class<T> clazz) {

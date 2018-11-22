@@ -16,6 +16,9 @@ import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Class responsible for loading Java classes from given packages
+ */
 public class SimpleContextClassLoader implements ContextClassLoader {
 
     private static Logger log = Logger.getLogger(SimpleContextClassLoader.class.getName());
