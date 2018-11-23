@@ -1,15 +1,18 @@
 package com.makarov.core.context;
 
 import com.makarov.core.annotation.Autowired;
-import com.makarov.core.annotation.Component;
 import com.makarov.core.annotation.Repository;
 import com.makarov.core.context.loader.SimpleContextClassLoader;
 import com.makarov.core.proxy.CRUDRepositoryInvocationHandler;
 import com.makarov.core.proxy.ProxyFactory;
 import com.makarov.exception.BeanNotFoundException;
 import com.makarov.exception.ContextInvocationException;
+import com.makarov.persistence.query.MethodSignatureBasedQueryResolver;
+import com.makarov.persistence.repository.DefaultCRUDRepository;
+import com.makarov.persistence.repository.DefaultDynamicQueryRepository;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import static com.makarov.core.annotation.AnnotationUtil.getBeanAnnotations;
 import static com.makarov.core.proxy.ProxyFactory.getRepositoryProxy;
 import static java.util.stream.Collectors.toList;
 
@@ -33,22 +37,25 @@ import static java.util.stream.Collectors.toList;
  */
 public class ApplicationContext implements Context {
 
-    private static Logger log = Logger.getLogger(ApplicationContext.class.getName());
+    private static Logger log;
+    private static final Class[] beansAnnotationTypes;
+    private String[] packages;
 
-    private static final Class[] beansAnnotationTypes = {
-            Component.class,
-            Repository.class
-    };
+    static {
+        log = Logger.getLogger(ApplicationContext.class.getName());
+        beansAnnotationTypes = getBeanAnnotations();
+    }
 
     private Map<String, Object> beans;
 
-    @Override
-    public void invoke(String... packages) {
-        if (this.beans != null) {
-            throw new ContextInvocationException("Context already instantiated");
-        }
+    /**
+     * package visible constructor to make instantiation available only with {@link ContextHandler}
+     */
+    ApplicationContext(String... packages) {
         this.beans = new HashMap<>();
-        registerAnnotatedBeans(packages);
+        this.packages = packages;
+        registerDefaultBeans();
+        registerAnnotatedBeans();
         resolveBeansDependencies();
     }
 
@@ -89,7 +96,7 @@ public class ApplicationContext implements Context {
         return bean;
     }
 
-    private void registerAnnotatedBeans(String... packages) {
+    private void registerAnnotatedBeans() {
         new SimpleContextClassLoader().loadJavaClasses(packages).forEach(clazz -> {
             if (beanAnnotated(clazz)) {
 
@@ -156,6 +163,26 @@ public class ApplicationContext implements Context {
         } else {
             return beans.get(getBeanName(clazz.getSimpleName()));
         }
+    }
+
+    /**
+     * Hardcoded now, but can be conveniently resolved by some kind of @ConditionalOnMissingBean annotation
+     */
+    private void registerDefaultBeans() {
+        Class[] defaultBeans = new Class[]{
+                DefaultDynamicQueryRepository.class,
+                DefaultCRUDRepository.class,
+                MethodSignatureBasedQueryResolver.class
+        };
+        Arrays.stream(defaultBeans).forEach(
+                bean -> {
+                    try {
+                        beans.put(getBeanName(bean.getSimpleName()), bean.newInstance());
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
     }
 
     private List<Object> getInterfaceImplementations(Class<?> clazz) {

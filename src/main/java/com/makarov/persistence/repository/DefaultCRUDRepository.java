@@ -1,5 +1,6 @@
 package com.makarov.persistence.repository;
 
+import com.makarov.core.annotation.Component;
 import com.makarov.persistence.query.QueryResolver;
 
 import java.lang.reflect.Method;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+@Component
 public class DefaultCRUDRepository<K, T> implements CRUDRepository<K, T> {
 
     private static Logger log = Logger.getLogger(DefaultCRUDRepository.class.getName());

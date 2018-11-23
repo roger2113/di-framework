@@ -2,11 +2,9 @@ package com.makarov.core.context;
 
 public interface Context {
 
-    void invoke(String... packages);
+    <T> T getBean(Class<T> clazz);
 
-    <T> Object getBean(Class<T> clazz);
+    <T> T getBeanProxy(Class<T> clazz);
 
-    <T> Object getBeanProxy(Class<T> clazz);
-
-    <T> Object getBean(String name);
+    <T> T getBean(String name);
 }

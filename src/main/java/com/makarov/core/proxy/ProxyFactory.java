@@ -8,14 +8,12 @@ import java.util.Arrays;
 
 /**
  * Class to create proxy objects for given interfaces
- *
- * creates common proxy for beans annotated with {@link com.makarov.core.annotation.Component}
- *
- * creates custom proxy for beans annotaed with {@link com.makarov.core.annotation.Repository}
- *
  */
 public class ProxyFactory {
 
+    /**
+     * creates common proxy for beans annotated with {@link com.makarov.core.annotation.Component}
+     */
     @SuppressWarnings("unchecked")
     public static <T> T getComponentProxy(Class<T> clazz, T object) {
         return (T) Proxy.newProxyInstance(
@@ -25,12 +23,15 @@ public class ProxyFactory {
         );
     }
 
+    /**
+     * creates custom proxy for beans annotated with {@link com.makarov.core.annotation.Repository}
+     */
     @SuppressWarnings("unchecked")
     public static <T> T getRepositoryProxy(Class<T> repositoryInterface, T targetRepository) {
         Class[] repositoryInterfaces = new Class[]{repositoryInterface};
         InvocationHandler invocationHandler;
 
-        if(targetRepository != null) {
+        if (targetRepository != null) {
             invocationHandler = new ImplementedRepositoryInvocationHandler(targetRepository);
         } else {
             invocationHandler = extendsCRUDRepository(repositoryInterface) ?

@@ -1,6 +1,7 @@
 package com.makarov.core.proxy;
 
 import com.makarov.core.annotation.Repository;
+import com.makarov.core.context.ContextHandler;
 import com.makarov.persistence.repository.CRUDRepository;
 import com.makarov.persistence.repository.DefaultCRUDRepository;
 
@@ -17,7 +18,7 @@ import static java.util.stream.Collectors.toList;
  * Class associated with proxy instances for interfaces,
  * which annotated with {@link Repository}
  * and which implements {@link com.makarov.persistence.repository.CRUDRepository}
- * <p>
+ *
  * Mainly created for intercepting "findBy...()" method calls
  * to create and log SQL query, based on method name and given arguments
  */
@@ -28,7 +29,7 @@ public class CRUDRepositoryInvocationHandler implements InvocationHandler {
     private CRUDRepository repository;
 
     public CRUDRepositoryInvocationHandler() {
-        this.repository = new DefaultCRUDRepository<>();
+        this.repository = new DefaultCRUDRepository();
     }
 
     public CRUDRepositoryInvocationHandler(CRUDRepository repository) {

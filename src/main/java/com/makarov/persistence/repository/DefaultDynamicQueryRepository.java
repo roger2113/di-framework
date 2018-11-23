@@ -1,5 +1,6 @@
 package com.makarov.persistence.repository;
 
+import com.makarov.core.annotation.Component;
 import com.makarov.persistence.query.MethodSignatureBasedQueryResolver;
 import com.makarov.persistence.query.QueryResolver;
 
@@ -7,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Component
 public class DefaultDynamicQueryRepository implements DynamicQueryRepository {
 
     private static Logger log = Logger.getLogger(DefaultDynamicQueryRepository.class.getName());

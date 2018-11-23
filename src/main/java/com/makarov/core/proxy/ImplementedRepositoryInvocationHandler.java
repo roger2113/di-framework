@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 /**
  * Class associated with proxy instances for interface,
  * which annotated with {@link Repository}
- * and has non framework implementation
+ * and has user provided implementation
  */
 public class ImplementedRepositoryInvocationHandler implements InvocationHandler {
 
