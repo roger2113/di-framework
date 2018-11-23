@@ -17,15 +17,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import static com.makarov.core.proxy.ProxyFactory.getRepositoryProxy;
 import static java.util.stream.Collectors.toList;
 
 /**
  * Core class to represent application context;
  * all beans contained in Map <beanName<String>, bean<Object>>
- *
+ * <p>
  * for interfaces annotated with {@link Repository}
  * bean map returns proxy-object with {@link CRUDRepositoryInvocationHandler}
- *
+ * <p>
  * In contrast to CGlib, JDK proxy implementation does not allow autowire proxy-object into bean property,
  * so real bean instances are autowired as beans dependencies,
  * and both getBean and getProxyBean implemented
@@ -78,22 +79,39 @@ public class ApplicationContext implements Context {
         return ProxyFactory.getComponentProxy(clazz, bean);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getBean(String name) {
+        T bean = (T) beans.get(name);
+        if (bean == null) {
+            throw new BeanNotFoundException("Bean not found with name: " + name);
+        }
+        return bean;
+    }
+
     private void registerAnnotatedBeans(String... packages) {
         new SimpleContextClassLoader().loadJavaClasses(packages).forEach(clazz -> {
             if (beanAnnotated(clazz)) {
-                Object bean = clazz;
+
                 if (!clazz.isInterface()) {
                     try {
-                        bean = clazz.newInstance();
+                        beans.put(getBeanName(clazz.getSimpleName()), clazz.newInstance());
                     } catch (InstantiationException | IllegalAccessException e) {
                         log.log(Level.SEVERE, " Instantiation exception for: " + clazz.getName(), e);
                     }
+
                 } else if (clazz.isAnnotationPresent(Repository.class)) {
-                    bean = ProxyFactory.getRepositoryProxy(clazz, null);
+                    List<Object> repositoryImplementations = getInterfaceImplementations(clazz);
+                    if (repositoryImplementations.isEmpty()) {
+                        beans.put(getBeanName(clazz.getSimpleName()), getRepositoryProxy(clazz, null));
+                    } else {
+                        repositoryImplementations.forEach(implementation ->
+                                beans.put(getBeanName(clazz.getSimpleName()), getRepositoryProxy(clazz, implementation)));
+                    }
                 }
-                beans.put(getBeanName(clazz.getSimpleName()), bean);
             }
         });
+
         log.info("Beans registered: " + beans.keySet());
     }
 
@@ -123,9 +141,7 @@ public class ApplicationContext implements Context {
 
     private Object resolveBeanDependency(Class<?> clazz) {
         if (clazz.isInterface()) {
-            List<Object> dependencyCandidates = beans.values().stream()
-                    .filter(bean -> clazz.isAssignableFrom(bean.getClass()))
-                    .collect(toList());
+            List<Object> dependencyCandidates = getInterfaceImplementations(clazz);
             if (!dependencyCandidates.isEmpty()) {
                 if (!(dependencyCandidates.size() > 1)) {
                     return dependencyCandidates.get(0);
@@ -140,6 +156,12 @@ public class ApplicationContext implements Context {
         } else {
             return beans.get(getBeanName(clazz.getSimpleName()));
         }
+    }
+
+    private List<Object> getInterfaceImplementations(Class<?> clazz) {
+        return beans.values().stream()
+                .filter(bean -> clazz.isAssignableFrom(bean.getClass()))
+                .collect(toList());
     }
 
     private String getBeanName(String className) {

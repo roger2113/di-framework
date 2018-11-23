@@ -1,4 +1,4 @@
-package com.makarov.samples.samples1;
+package com.makarov.samples.contextClassLoaderSamples.samples1;
 
 import com.makarov.core.annotation.Repository;
 import com.makarov.persistence.repository.CRUDRepository;

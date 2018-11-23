@@ -1,13 +1,12 @@
 package com.makarov.core.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
- * Marks interface as bean, which proxy should be loaded in ApplicationContext
+ * Marks interface as bean, which proxy should be registered in ApplicationContext
+ * if interface has implementations, only they will be registered
  */
+@Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Repository {

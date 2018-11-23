@@ -7,11 +7,22 @@ import com.makarov.core.annotation.Component;
 public class CarCustomService implements CarCommonService {
 
     @Autowired
-    private ManagerCommonService managerCommonService;
+    private ManagerCustomService managerCustomService;
+
+    @Autowired
+    private ManagerAdditionalService managerAdditionalService;
+
+    public ManagerCommonService getManagerCustomService() {
+        return managerCustomService;
+    }
+
+    public ManagerAdditionalService getManagerAdditionalService() {
+        return managerAdditionalService;
+    }
 
     @Override
     public String getResult() {
-        return "CarCustomService processed;" + managerCommonService.getResult();
+        return "CarCustomService processed;" + managerCustomService.getResult();
     }
 
 }

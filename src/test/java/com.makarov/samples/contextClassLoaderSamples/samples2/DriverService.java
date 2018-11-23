@@ -1,4 +1,4 @@
-package com.makarov.samples.samples2;
+package com.makarov.samples.contextClassLoaderSamples.samples2;
 
 import com.makarov.core.annotation.Component;
 

@@ -1,12 +1,11 @@
 package com.makarov.core.proxy;
 
 import com.makarov.core.annotation.Repository;
-import com.makarov.persistence.repository.DefaultDynamicMethodRepository;
-import com.makarov.persistence.repository.DynamicMethodRepository;
+import com.makarov.persistence.repository.DefaultDynamicQueryRepository;
+import com.makarov.persistence.repository.DynamicQueryRepository;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -18,7 +17,7 @@ public class CustomRepositoryInvocationHandler implements InvocationHandler {
 
     private static Logger log = Logger.getLogger(CustomRepositoryInvocationHandler.class.getName());
 
-    private DynamicMethodRepository repository = new DefaultDynamicMethodRepository();
+    private DynamicQueryRepository repository = new DefaultDynamicQueryRepository();
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {

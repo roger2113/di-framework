@@ -3,7 +3,7 @@ package com.makarov.persistence.repository;
 import java.util.List;
 import java.util.Optional;
 
-public interface CRUDRepository<K, T>  extends DynamicMethodRepository {
+public interface CRUDRepository<K, T>  extends DynamicQueryRepository {
 
     public Optional<T> findOne(K id);
 

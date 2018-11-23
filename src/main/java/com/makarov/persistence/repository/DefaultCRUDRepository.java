@@ -12,18 +12,18 @@ public class DefaultCRUDRepository<K, T> implements CRUDRepository<K, T> {
 
     private static Logger log = Logger.getLogger(DefaultCRUDRepository.class.getName());
 
-    private DynamicMethodRepository dynamicMethodRepository;
+    private DynamicQueryRepository dynamicQueryRepository;
 
     public DefaultCRUDRepository() {
-        this.dynamicMethodRepository = new DefaultDynamicMethodRepository();
+        this.dynamicQueryRepository = new DefaultDynamicQueryRepository();
     }
 
-    public DefaultCRUDRepository(DynamicMethodRepository dynamicMethodRepository) {
-        this.dynamicMethodRepository = dynamicMethodRepository;
+    public DefaultCRUDRepository(DynamicQueryRepository dynamicQueryRepository) {
+        this.dynamicQueryRepository = dynamicQueryRepository;
     }
 
     public DefaultCRUDRepository(QueryResolver queryResolver) {
-        this.dynamicMethodRepository = new DefaultDynamicMethodRepository(queryResolver);
+        this.dynamicQueryRepository = new DefaultDynamicQueryRepository(queryResolver);
     }
 
     @Override
@@ -52,6 +52,6 @@ public class DefaultCRUDRepository<K, T> implements CRUDRepository<K, T> {
 
     @Override
     public Object execute(Method method, Object[] args) {
-        return dynamicMethodRepository.execute(method, args);
+        return dynamicQueryRepository.execute(method, args);
     }
 }

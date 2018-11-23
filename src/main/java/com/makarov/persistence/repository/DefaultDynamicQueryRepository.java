@@ -7,17 +7,17 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DefaultDynamicMethodRepository implements DynamicMethodRepository {
+public class DefaultDynamicQueryRepository implements DynamicQueryRepository {
 
-    private static Logger log = Logger.getLogger(DefaultDynamicMethodRepository.class.getName());
+    private static Logger log = Logger.getLogger(DefaultDynamicQueryRepository.class.getName());
 
     private QueryResolver queryResolver;
 
-    public DefaultDynamicMethodRepository() {
+    public DefaultDynamicQueryRepository() {
         this.queryResolver = new MethodSignatureBasedQueryResolver();
     }
 
-    public DefaultDynamicMethodRepository(QueryResolver queryResolver) {
+    public DefaultDynamicQueryRepository(QueryResolver queryResolver) {
         this.queryResolver = queryResolver;
     }
 

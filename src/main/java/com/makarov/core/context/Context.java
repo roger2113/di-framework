@@ -8,4 +8,5 @@ public interface Context {
 
     <T> Object getBeanProxy(Class<T> clazz);
 
+    <T> Object getBean(String name);
 }

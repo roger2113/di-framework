@@ -1,12 +1,13 @@
 package com.makarov.core.context;
 
+import com.makarov.exception.BeanNotFoundException;
+import com.makarov.persistence.repository.DefaultDynamicQueryRepository;
 import com.makarov.samples.applicationContextTestSamples.*;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
-import java.io.PrintStream;
 import java.lang.reflect.Method;
 
 import static junit.framework.TestCase.assertTrue;
@@ -15,14 +16,23 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(BlockJUnit4ClassRunner.class)
 public class ApplicationContextTest {
 
-    private ApplicationContext context;
-    private PrintStream out;
+    private static ApplicationContext context;
 
-    @Before
-    public void init() {
+    @BeforeClass
+    public static void init() {
         context = new ApplicationContext();
         context.invoke("com.makarov.samples.applicationContextTestSamples");
-        out = System.out;
+    }
+
+    @Test
+    public void bean_WithComponentAnnotation_Registered() {
+        CarCommonService carService = context.getBean(CarCustomService.class);
+        assertNotNull("Required bean has not been created", carService);
+    }
+
+    @Test(expected = BeanNotFoundException.class)
+    public void class_WithoutAnyAnnotation_NotRegisteredAsBean() {
+        context.getBean(NotBean.class);
     }
 
     /**
@@ -38,17 +48,17 @@ public class ApplicationContextTest {
     public void proxyCreatedForRequiredBean_AndInvocationHandlerInvoked() {
         CarCommonService carServiceProxy = context.getBeanProxy(CarCustomService.class);
         assertNotNull("Proxy has not been created", carServiceProxy);
-        assertTrue("Proxy invocation not passed", carServiceProxy.getResult().startsWith("Proxy passed;"));
+        assertTrue("Proxy invocation handler not invoked", carServiceProxy.getResult().startsWith("Proxy passed;"));
     }
 
     /**
-     * create CarCustomService with Autowired ManagerCommonService dependency
+     * getting CarCustomService with Autowired ManagerCommonService dependency
      * ensure dependency method call applied string "ManagerCustomService processed;"
      * in {@link CarCustomService#getResult()} method
      */
     @Test
     public void beanDependencyAutowired_AndDependencyMethodInvoked() {
-        CarCustomService carService = context.getBean(CarCustomService.class);
+        CarCommonService carService = context.getBean(CarCustomService.class);
         String result = carService.getResult();
 
         assertNotNull("Dependency has not been injected", carService);
@@ -57,26 +67,24 @@ public class ApplicationContextTest {
                 result.contains("CarCustomService processed;ManagerCustomService processed;"));
     }
 
+    @Test
+    public void beanBothDependenciesAutowired() {
+        CarCustomService carService = context.getBean(CarCustomService.class);
+        assertNotNull("One of dependencies not injected", carService.getManagerAdditionalService());
+        assertNotNull("One of dependencies not injected", carService.getManagerCustomService());
+    }
+
     /**
      * getting proxy for {@link com.makarov.samples.applicationContextTestSamples.CarCustomRepository} and
-     * ensure {@link com.makarov.persistence.repository.DefaultDynamicMethodRepository#execute(Method, Object[])}
+     * ensure {@link DefaultDynamicQueryRepository#execute(Method, Object[])}
      * invoked and printed into console SQL query based on method signature
      */
     @Test
-    public void testCarCustomRepository() {
+    public void proxyCreatedForRepositoryAnnotatedInterface() {
         CarCustomRepository carRepository = context.getBean(CarCustomRepository.class);
         assertNotNull(carRepository);
-        carRepository.findById(132);
-        //INFO: Executing SQL query: SELECT * FROM car WHERE id = 132;
-
-        carRepository.findByModelAndPrice("Logan", 5500.);
-        //INFO: Executing SQL query: SELECT * FROM car WHERE model = 'Logan' AND price = 5500.0;
-
-        carRepository.findByModelOrPrice("Golf", 8450.34);
-        //INFO: Executing SQL query: SELECT * FROM car WHERE model = 'Golf' OR price = 8450.34;
-
-        carRepository.findByIdOrModelAndPrice(1, "Tuatara", 2300.99);
-        //INFO: Executing SQL query: SELECT * FROM car WHERE id = 1 OR model = 'Tuatara' AND price = 2300.99;
+        assertTrue(carRepository instanceof CarCustomRepository);
+        assertTrue(carRepository.getClass().getName().startsWith("com.sun.proxy"));
     }
 
     /**
@@ -85,16 +93,11 @@ public class ApplicationContextTest {
      * methods invoked and logged
      */
     @Test
-    public void testCarCRUDRepository() {
+    public void proxyCreatedForRepositoryAnnotatedInterface_WhichExtendsCRUDRepository() {
         CarCRUDRepository carRepository = context.getBean(CarCRUDRepository.class);
         assertNotNull(carRepository);
-        carRepository.findOne(3);
-        carRepository.findAll();
-        carRepository.save(new Car(3, "Juke", 4500.));
-        carRepository.delete(3);
+        assertTrue(carRepository instanceof CarCRUDRepository);
+        assertTrue(carRepository.getClass().getName().startsWith("com.sun.proxy"));
     }
 
-    private void assertConsoleLogContains(String output) {
-
-    }
 }

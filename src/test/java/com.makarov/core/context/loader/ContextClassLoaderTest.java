@@ -1,56 +1,52 @@
 package com.makarov.core.context.loader;
 
-import com.makarov.core.context.loader.SimpleContextClassLoader;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
-import static org.junit.Assert.assertFalse;
+import java.util.List;
 
-/**
- * Class to test {@link SimpleContextClassLoader}
- * <p>
- * Cases:
- * 1) 6 java classes from {@link com.makarov.samples.samples1} package
- * 2) 3 - from {@link com.makarov.samples.samples2} package, including 1 in inner package
- * 3) 9 - from both packages
- * 4) 0 - from {@link com.makarov.samples.samples2} package
- */
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(BlockJUnit4ClassRunner.class)
 public class ContextClassLoaderTest {
 
-    @Test
-    public void test() {
-        assertFalse(false);
+    private static SimpleContextClassLoader classLoader;
+    private static final String ROOT = "com.makarov.samples.contextClassLoaderSamples.";
+
+    @BeforeClass
+    public static void init() {
+        classLoader = new SimpleContextClassLoader();
     }
 
+    @Test
+    public void loadClasses() {
+        List<Class> classes = loadFrom(ROOT + "samples1");
+        assertEquals(6, classes.size());
+    }
 
-//    public static void main(String[] args) {
-//        ContextClassLoader classLoader = new SimpleContextClassLoader();
-//
-//        //CASE 1
-//        List<Class> classes = classLoader.loadJavaClasses("com.makarov.samples1");
-//        int classesLoaded = classes.size();
-//        AssertUtil.assertTrue(classesLoaded == 6, String.format("Java classes loaded not properly, " +
-//                "6 - needed, %d - actual", classesLoaded));
-//
-//        //CASE 2
-//        classes = classLoader.loadJavaClasses("com.makarov.samples2");
-//        classesLoaded = classes.size();
-//        AssertUtil.assertTrue(classesLoaded == 3, String.format("Java classes loaded not properly, " +
-//                "3 - needed, %d - actual", classesLoaded));
-//
-//        //CASE 3
-//        classes = classLoader.loadJavaClasses("com.makarov.samples1", "com.makarov.samples2");
-//        classesLoaded = classes.size();
-//        AssertUtil.assertTrue(classesLoaded == 9, String.format("Java classes loaded not properly, " +
-//                "9 - needed, %d - actual", classesLoaded));
-//
-//        //CASE 4
-//        classes = classLoader.loadJavaClasses("com.makarov.samples3");
-//        AssertUtil.assertTrue(classes.isEmpty(), String.format("Java classes loaded not properly, " +
-//                "0 - needed, %d - actual", classes.size()));
-//
-//    }
+    @Test
+    public void loadClasses_IncludingClassesFromInnerPackage() {
+        List<Class> classes = loadFrom(ROOT + "samples2");
+        assertEquals(3, classes.size());
+    }
+
+    @Test
+    public void loadNineClasses_FromMultiplePackages() {
+        List<Class> classes = loadFrom(ROOT + "samples1", ROOT + "samples2");
+        assertEquals(9, classes.size());
+    }
+
+    @Test
+    public void loadZeroClasses_FromPackageWithoutJavaFiles() {
+        List<Class> classes = loadFrom(ROOT + "samples3");
+        assertTrue(classes.isEmpty());
+    }
+
+    private List<Class> loadFrom(String... packages) {
+        return classLoader.loadJavaClasses(packages);
+    }
 
 }

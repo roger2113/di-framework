@@ -6,6 +6,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
+/**
+ * Class to create proxy objects for given interfaces
+ *
+ * creates common proxy for beans annotated with {@link com.makarov.core.annotation.Component}
+ *
+ * creates custom proxy for beans annotaed with {@link com.makarov.core.annotation.Repository}
+ *
+ */
 public class ProxyFactory {
 
     @SuppressWarnings("unchecked")
