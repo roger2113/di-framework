@@ -1,6 +1,10 @@
 package com.makarov.core.proxy;
 
+import com.makarov.persistence.repository.CRUDRepository;
+
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
 public class ProxyFactory {
 
@@ -15,14 +19,26 @@ public class ProxyFactory {
 
     @SuppressWarnings("unchecked")
     public static <T> T getRepositoryProxy(Class<T> repositoryInterface, T targetRepository) {
-        Class[] interfaces = targetRepository != null ?
-                targetRepository.getClass().getInterfaces() :
-                new Class[] {repositoryInterface};
+        Class[] repositoryInterfaces = new Class[]{repositoryInterface};
+        InvocationHandler invocationHandler;
+
+        if(targetRepository != null) {
+            invocationHandler = new ImplementedRepositoryInvocationHandler(targetRepository);
+        } else {
+            invocationHandler = extendsCRUDRepository(repositoryInterface) ?
+                    new CRUDRepositoryInvocationHandler() :
+                    new CustomRepositoryInvocationHandler();
+        }
 
         return (T) Proxy.newProxyInstance(
                 repositoryInterface.getClassLoader(),
-                interfaces,
-                new RepositoryInvocationHandler(targetRepository)
+                repositoryInterfaces,
+                invocationHandler
         );
+    }
+
+    private static boolean extendsCRUDRepository(Class<?> repositoryInterface) {
+        return Arrays.stream(repositoryInterface.getInterfaces())
+                .anyMatch(intf -> intf.getName().equals(CRUDRepository.class.getName()));
     }
 }

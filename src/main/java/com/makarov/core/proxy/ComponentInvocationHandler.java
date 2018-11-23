@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 
 public class ComponentInvocationHandler implements InvocationHandler {
 
-    private Object target;
+    private final Object target;
 
     public ComponentInvocationHandler(Object target) {
         this.target = target;

@@ -1,9 +1,10 @@
 package com.makarov.core.context;
 
-import com.makarov.annotation.Autowired;
-import com.makarov.annotation.Component;
-import com.makarov.annotation.Repository;
+import com.makarov.core.annotation.Autowired;
+import com.makarov.core.annotation.Component;
+import com.makarov.core.annotation.Repository;
 import com.makarov.core.context.loader.SimpleContextClassLoader;
+import com.makarov.core.proxy.CRUDRepositoryInvocationHandler;
 import com.makarov.core.proxy.ProxyFactory;
 import com.makarov.exception.BeanNotFoundException;
 import com.makarov.exception.ContextInvocationException;
@@ -22,8 +23,8 @@ import static java.util.stream.Collectors.toList;
  * Core class to represent application context;
  * all beans contained in Map <beanName<String>, bean<Object>>
  *
- * for interfaces annotated with {@link com.makarov.annotation.Repository}
- * bean map returns proxy-object with {@link com.makarov.core.proxy.RepositoryInvocationHandler}
+ * for interfaces annotated with {@link Repository}
+ * bean map returns proxy-object with {@link CRUDRepositoryInvocationHandler}
  *
  * In contrast to CGlib, JDK proxy implementation does not allow autowire proxy-object into bean property,
  * so real bean instances are autowired as beans dependencies,
