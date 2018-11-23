@@ -10,8 +10,8 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 
 import java.lang.reflect.Method;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(BlockJUnit4ClassRunner.class)
 public class ApplicationContextTest {

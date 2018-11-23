@@ -24,19 +24,19 @@ public class ContextClassLoaderTest {
     @Test
     public void loadClasses() {
         List<Class> classes = loadFrom(ROOT + "samples1");
-        assertEquals(6, classes.size());
+        assertEquals(3, classes.size());
     }
 
     @Test
     public void loadClasses_IncludingClassesFromInnerPackage() {
         List<Class> classes = loadFrom(ROOT + "samples2");
-        assertEquals(3, classes.size());
+        assertEquals(2, classes.size());
     }
 
     @Test
     public void loadNineClasses_FromMultiplePackages() {
         List<Class> classes = loadFrom(ROOT + "samples1", ROOT + "samples2");
-        assertEquals(9, classes.size());
+        assertEquals(5, classes.size());
     }
 
     @Test
