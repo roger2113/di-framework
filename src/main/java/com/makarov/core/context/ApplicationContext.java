@@ -27,10 +27,10 @@ import static java.util.stream.Collectors.toList;
 /**
  * Core class to represent application context;
  * all beans contained in Map <beanName<String>, bean<Object>>
- * <p>
+ *
  * for interfaces annotated with {@link Repository}
  * bean map returns proxy-object with {@link CRUDRepositoryInvocationHandler}
- * <p>
+ *
  * In contrast to CGlib, JDK proxy implementation does not allow autowire proxy-object into bean property,
  * so real bean instances are autowired as beans dependencies,
  * and both getBean and getProxyBean implemented
@@ -97,6 +97,7 @@ public class ApplicationContext implements Context {
     }
 
     private void registerAnnotatedBeans() {
+        log.info("Registering annotated classes...");
         new SimpleContextClassLoader().loadJavaClasses(packages).forEach(clazz -> {
             if (beanAnnotated(clazz)) {
 

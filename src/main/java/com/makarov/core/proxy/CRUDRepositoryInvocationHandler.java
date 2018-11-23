@@ -38,7 +38,8 @@ public class CRUDRepositoryInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        log.info("Proxying CRUD repository method call...");
+        log.info("Proxying CRUD repository method: " + method.getName()
+                + " with args: " + Arrays.toString(args));
 
         String callMethodName = method.getName();
         List<String> implementedMethodNames = Arrays.stream(repository.getClass().getMethods())

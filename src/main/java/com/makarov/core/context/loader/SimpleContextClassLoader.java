@@ -65,6 +65,7 @@ public class SimpleContextClassLoader implements ContextClassLoader {
      */
     private List<File> collectFiles(URI rootPath) {
         try {
+            //because of java.nio.file.FileSystemNotFoundException when run .jar
             return Files.walk(Paths.get(rootPath))
                     .filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".class"))

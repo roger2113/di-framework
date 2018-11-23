@@ -5,6 +5,7 @@ import com.makarov.core.annotation.Repository;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -24,7 +25,8 @@ public class ImplementedRepositoryInvocationHandler implements InvocationHandler
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
-        log.info("Proxying implemented repository method call...");
+        log.info("Proxying implemented repository method: " + method.getName()
+                + " with args: " + Arrays.toString(args));
         return method.invoke(target, args);
     }
 

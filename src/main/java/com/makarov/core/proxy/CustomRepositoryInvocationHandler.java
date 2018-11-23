@@ -7,6 +7,7 @@ import com.makarov.persistence.repository.DynamicQueryRepository;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -31,7 +32,8 @@ public class CustomRepositoryInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
-        log.info("Proxying custom repository method call...");
+        log.info("Proxying custom repository method: " + method.getName()
+                + " with args: " + Arrays.toString(args));
         return repository.execute(method, args);
     }
 
