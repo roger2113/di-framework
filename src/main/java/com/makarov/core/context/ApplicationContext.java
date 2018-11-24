@@ -97,8 +97,10 @@ public class ApplicationContext implements Context {
     }
 
     private void registerAnnotatedBeans() {
+        List<Class> loadedClasses = new SimpleContextClassLoader().loadJavaClasses(packages);
+
         log.info("Registering annotated classes...");
-        new SimpleContextClassLoader().loadJavaClasses(packages).forEach(clazz -> {
+        loadedClasses.forEach(clazz -> {
             if (beanAnnotated(clazz)) {
 
                 if (!clazz.isInterface()) {

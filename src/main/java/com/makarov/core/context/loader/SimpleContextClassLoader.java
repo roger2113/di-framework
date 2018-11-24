@@ -38,8 +38,21 @@ public class SimpleContextClassLoader implements ContextClassLoader {
                         String filePath = classFile.getPath();
 
                         //Define path for packages located inside root package (inner packages)
-                        String innerPackagePath = filePath.substring(packageRoot.getPath().length(), filePath.lastIndexOf(fileName) - 1)
-                                .replace('/', '.');
+                        String innerPackagePath;
+
+                        //in case of loading from .jar
+                        if (packageRoot.getPath() == null) {
+                            String dotFilePath = filePath.replace('/', '.');
+                            int innerPackageBeginIndex = dotFilePath.indexOf(packagePath) + packagePath.length();
+                            int innerPackageEndIndex = dotFilePath.lastIndexOf(fileName) - 1;
+                            innerPackagePath = dotFilePath.substring(innerPackageBeginIndex, innerPackageEndIndex);
+                        }
+                        //in case of loading from not archived files
+                        else {
+                            innerPackagePath = filePath
+                                    .substring(packageRoot.getPath().length(), filePath.lastIndexOf(fileName) - 1)
+                                    .replace('/', '.');
+                        }
                         String className = fileName.substring(0, fileName.lastIndexOf("."));
                         javaClasses.add(Class.forName(packagePath + innerPackagePath + "." + className));
                     }
@@ -48,18 +61,19 @@ public class SimpleContextClassLoader implements ContextClassLoader {
                 log.log(Level.SEVERE, e.getMessage());
             }
         }
+        log.info("Java classes loaded: " + javaClasses);
         return javaClasses;
     }
 
+    /**
+     * Loading plain files and archived files requires different FileSystem's
+     */
     private PathReference getPath(URI resPath) throws IOException {
         try {
             // first try getting a path via existing file systems
             return new PathReference(Paths.get(resPath), null);
         } catch (final FileSystemNotFoundException e) {
-            /*
-             * not directly on file system, so then it's somewhere else (e.g.:
-             * JAR)
-             */
+             //not directly on file system, so then it's somewhere else (e.g.: JAR)
             Map<String, ?> env = Collections.emptyMap();
             FileSystem fs = FileSystems.newFileSystem(resPath, env);
             return new PathReference(fs.provider().getPath(resPath), fs);
@@ -76,16 +90,49 @@ public class SimpleContextClassLoader implements ContextClassLoader {
      */
     private List<File> collectFiles(PathReference rootPath) {
         try {
-            //because of java.nio.file.FileSystemNotFoundException when run .jar
-            return Files.walk(rootPath.getPath())
+            List<File> files = Files.walk(rootPath.getPath())
                     .filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".class"))
-                    .map(path -> new File(path.toUri()))
+                    .map(this::toFile)
                     .collect(toList());
-        } catch (IOException e) {
-            e.printStackTrace();
+                rootPath.close();
+            return files;
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Cannot load files from package " + rootPath +": " +e.getMessage());
         }
         return Collections.emptyList();
     }
 
+    private File toFile(Path path) {
+        try {
+            return new File(path.toUri());
+        } catch (IllegalArgumentException e) {
+            return new File(getClass().getResource(path.toString()).getFile());
+        }
+    }
+
+    private class PathReference implements AutoCloseable {
+
+        Path path;
+        FileSystem fileSystem;
+
+        private PathReference(Path path, FileSystem fileSystem) {
+            this.path = path;
+            this.fileSystem = fileSystem;
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (this.fileSystem != null)
+                this.fileSystem.close();
+        }
+
+        Path getPath() {
+            return this.path;
+        }
+
+        FileSystem getFileSystem() {
+            return this.fileSystem;
+        }
+    }
 }
