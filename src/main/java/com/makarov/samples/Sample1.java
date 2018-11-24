@@ -1,8 +1,9 @@
-package com.makarov.samples.sample1;
+package com.makarov.samples;
 
 import com.makarov.core.context.ContextHandler;
+import com.makarov.samples.sample1.SomeRepository;
 
-public class Sample {
+public class Sample1 {
 
     public static void main(String[] args) {
         ContextHandler.invoke("com.makarov.samples.sample1");

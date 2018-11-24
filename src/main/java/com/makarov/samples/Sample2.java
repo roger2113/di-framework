@@ -1,8 +1,9 @@
-package com.makarov.samples.sample2;
+package com.makarov.samples;
 
 import com.makarov.core.context.ContextHandler;
+import com.makarov.samples.sample2.SomeCRUDRepository;
 
-public class Sample {
+public class Sample2 {
 
     public static void main(String[] args) {
         ContextHandler.invoke("com.makarov.samples.sample2");
@@ -15,7 +16,7 @@ public class Sample {
 
     private static class Car {
 
-        public Car(Integer id) {
+        Car(Integer id) {
             this.id = id;
         }
 
