@@ -8,6 +8,10 @@ Bean dependency annotation
 * @Autowired - field applicable, injects other bean as dependency
 
 
+Repository interfaces can extend nothing, other repository interface, or framework provided CRUDRepository.
+In last case default implementation of common CRUD methods will be provided, but other methods will be resolved dynamically.
+
+---
 Two runnable sample classes provided with own beans for every sample. 
 Application will log main steps for bean instantiation. 
 

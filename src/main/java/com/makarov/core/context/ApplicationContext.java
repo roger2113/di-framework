@@ -58,6 +58,7 @@ public class ApplicationContext implements Context {
         registerDefaultBeans();
         registerAnnotatedBeans();
         resolveBeansDependencies();
+        log.info("Context initialization finished\n");
     }
 
     @Override

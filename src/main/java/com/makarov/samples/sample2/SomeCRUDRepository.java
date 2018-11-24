@@ -5,4 +5,8 @@ import com.makarov.persistence.repository.CRUDRepository;
 
 @Repository
 public interface SomeCRUDRepository extends CRUDRepository<Object, Object> {
+
+    Object someMethod();
+
+    Object findByPriceOrColor(Double price, String color);
 }

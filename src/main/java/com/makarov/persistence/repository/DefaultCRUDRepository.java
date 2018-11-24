@@ -30,26 +30,26 @@ public class DefaultCRUDRepository<K, T> implements CRUDRepository<K, T> {
 
     @Override
     public Optional<T> findOne(K id) {
-        log.info("Executing DefaultCRUDRepository.findOne(" + id + ")");
+        log.info("Executing DefaultCRUDRepository.findOne(" + id + ")\n");
         return Optional.empty();
     }
 
     @Override
     public List<T> findAll() {
-        log.info("Executing DefaultCRUDRepository.findAll()");
+        log.info("Executing DefaultCRUDRepository.findAll()\n");
         return new ArrayList<>();
     }
 
     @Override
     public T save(T entity) {
-        log.info("Executing DefaultCRUDRepository.save(entity)"
+        log.info("Executing DefaultCRUDRepository.save(entity)\n"
                 + "method, where entity=" + entity);
         return entity;
     }
 
     @Override
     public void delete(K id) {
-        log.info("Executing DefaultCRUDRepository.delete(" + id + ")");
+        log.info("Executing DefaultCRUDRepository.delete(" + id + ")\n");
     }
 
     @Override

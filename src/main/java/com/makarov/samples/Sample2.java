@@ -12,6 +12,8 @@ public class Sample2 {
         repository.findOne(8);
         repository.findAll();
         repository.delete(312);
+        repository.someMethod();
+        repository.findByPriceOrColor(155., "Yellow");
     }
 
     private static class Car {
@@ -24,9 +26,7 @@ public class Sample2 {
 
         @Override
         public String toString() {
-            return "Car{" +
-                    "id=" + id +
-                    '}';
+            return "Car{" + "id=" + id + '}';
         }
     }
 }

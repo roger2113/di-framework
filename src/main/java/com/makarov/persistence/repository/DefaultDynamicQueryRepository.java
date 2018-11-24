@@ -26,7 +26,7 @@ public class DefaultDynamicQueryRepository implements DynamicQueryRepository {
     @Override
     public Object execute(Method method, Object[] args) {
         String query = queryResolver.resolveQuery(method, args);
-        log.log(Level.INFO, "Executing SQL query: {0}", query);
+        log.log(Level.INFO, "Executing SQL query: {0}\n", query);
         Class resultType = method.getReturnType();
         Object result = null;
         try {
