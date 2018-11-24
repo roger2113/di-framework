@@ -24,37 +24,23 @@ public class SimpleContextClassLoader implements ContextClassLoader {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         List<Class> javaClasses = new ArrayList<>();
 
-        for (String packagePath : packages) {
+        for (String packageName : packages) {
             try {
-                log.info("Loading java classes from package: " + packagePath);
-                String path = packagePath.replace('.', '/');
+                log.info("Loading java classes from package: " + packageName);
+                String path = packageName.replace('.', '/');
                 Enumeration<URL> resources = classLoader.getResources(path);
 
                 while (resources.hasMoreElements()) {
                     URI packageRoot = resources.nextElement().toURI();
 
                     for (File classFile : collectFiles(getPath(packageRoot))) {
+
+                        String innerPackagePath = defineInnerPackagePath(classFile, packageName, packageRoot);
+
                         String fileName = classFile.getName();
-                        String filePath = classFile.getPath();
-
-                        //Define path for packages located inside root package (inner packages)
-                        String innerPackagePath;
-
-                        //in case of loading from .jar
-                        if (packageRoot.getPath() == null) {
-                            String dotFilePath = filePath.replace('/', '.');
-                            int innerPackageBeginIndex = dotFilePath.indexOf(packagePath) + packagePath.length();
-                            int innerPackageEndIndex = dotFilePath.lastIndexOf(fileName) - 1;
-                            innerPackagePath = dotFilePath.substring(innerPackageBeginIndex, innerPackageEndIndex);
-                        }
-                        //in case of loading from not archived files
-                        else {
-                            innerPackagePath = filePath
-                                    .substring(packageRoot.getPath().length(), filePath.lastIndexOf(fileName) - 1)
-                                    .replace('/', '.');
-                        }
                         String className = fileName.substring(0, fileName.lastIndexOf("."));
-                        javaClasses.add(Class.forName(packagePath + innerPackagePath + "." + className));
+
+                        javaClasses.add(Class.forName(packageName + innerPackagePath + "." + className));
                     }
                 }
             } catch (IOException | URISyntaxException | ClassNotFoundException e) {
@@ -103,6 +89,29 @@ public class SimpleContextClassLoader implements ContextClassLoader {
         return Collections.emptyList();
     }
 
+    private String defineInnerPackagePath(File file, String packageName, URI packagePath) {
+        String fileName = file.getName();
+        String filePath = file.getPath();
+
+        //Define path for packages located inside root package (inner packages)
+        String innerPackagePath;
+
+        //in case of loading from .jar
+        if (packagePath.getPath() == null) {
+            String dotFilePath = filePath.replace('/', '.');
+            int innerPackageBeginIndex = dotFilePath.indexOf(packageName) + packageName.length();
+            int innerPackageEndIndex = dotFilePath.lastIndexOf(fileName) - 1;
+            innerPackagePath = dotFilePath.substring(innerPackageBeginIndex, innerPackageEndIndex);
+        }
+        //in case of loading from not archived files
+        else {
+            innerPackagePath = filePath
+                    .substring(packagePath.getPath().length(), filePath.lastIndexOf(fileName) - 1)
+                    .replace('/', '.');
+        }
+        return innerPackagePath;
+    }
+
     private File toFile(Path path) {
         try {
             return new File(path.toUri());
@@ -131,8 +140,5 @@ public class SimpleContextClassLoader implements ContextClassLoader {
             return this.path;
         }
 
-        FileSystem getFileSystem() {
-            return this.fileSystem;
-        }
     }
 }
