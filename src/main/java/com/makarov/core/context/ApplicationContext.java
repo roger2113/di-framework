@@ -1,12 +1,13 @@
 package com.makarov.core.context;
 
+import com.makarov.common.LoggingConfiguration;
 import com.makarov.core.annotation.Autowired;
 import com.makarov.core.annotation.Repository;
 import com.makarov.core.context.loader.SimpleContextClassLoader;
 import com.makarov.core.proxy.CRUDRepositoryInvocationHandler;
 import com.makarov.core.proxy.ProxyFactory;
-import com.makarov.exception.BeanNotFoundException;
-import com.makarov.exception.ContextInvocationException;
+import com.makarov.common.exception.BeanNotFoundException;
+import com.makarov.common.exception.ContextInvocationException;
 import com.makarov.persistence.query.MethodSignatureBasedQueryResolver;
 import com.makarov.persistence.repository.DefaultCRUDRepository;
 import com.makarov.persistence.repository.DefaultDynamicQueryRepository;
@@ -175,7 +176,8 @@ public class ApplicationContext implements Context {
         Class[] defaultBeans = new Class[]{
                 DefaultDynamicQueryRepository.class,
                 DefaultCRUDRepository.class,
-                MethodSignatureBasedQueryResolver.class
+                MethodSignatureBasedQueryResolver.class,
+                LoggingConfiguration.class
         };
         Arrays.stream(defaultBeans).forEach(
                 bean -> {

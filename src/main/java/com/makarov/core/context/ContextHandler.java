@@ -1,6 +1,6 @@
 package com.makarov.core.context;
 
-import com.makarov.exception.ContextInvocationException;
+import com.makarov.common.exception.ContextInvocationException;
 
 /**
  * Class represents application context instantiating

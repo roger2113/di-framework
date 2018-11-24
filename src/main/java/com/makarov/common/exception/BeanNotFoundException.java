@@ -1,4 +1,4 @@
-package com.makarov.exception;
+package com.makarov.common.exception;
 
 public class BeanNotFoundException extends RuntimeException {
 

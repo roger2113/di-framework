@@ -1,6 +1,6 @@
 package com.makarov.core.context;
 
-import com.makarov.exception.BeanNotFoundException;
+import com.makarov.common.exception.BeanNotFoundException;
 import com.makarov.samples.applicationContextTestSamples.*;
 import org.junit.BeforeClass;
 import org.junit.Test;

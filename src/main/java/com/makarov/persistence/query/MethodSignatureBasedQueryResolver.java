@@ -11,11 +11,13 @@ import java.util.logging.Logger;
  * ! only methods of type "findBy...Or/And..." implemented
  *
  *  - table name is defined as lowercase of Method return Type simple name
- *  - logical expression 'WHERE' is defined as extracted from Method name parameters
- *    consequentially concatenated with given arguments
+ *  - logical expression 'WHERE' is defined as parameters, extracted from Method name,
+ *    and consequentially concatenated with given arguments
  *
- *  For example: <Car> findByPriceAndColor(Double priceValue, String colorValue)
- *             = SELECT * FROM car WHERE price=:priceValue AND color=:colorValue
+ *  For example:
+ *             public Car findByPriceAndColor(Double priceValue, String colorValue)
+ *             =
+ *             SELECT * FROM car WHERE price=:priceValue AND color=:colorValue
  *
  * !!! Arguments have to be in the same order as params in method name
  */

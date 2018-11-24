@@ -26,13 +26,13 @@ public class DefaultDynamicQueryRepository implements DynamicQueryRepository {
     @Override
     public Object execute(Method method, Object[] args) {
         String query = queryResolver.resolveQuery(method, args);
-        log.info("Executing SQL query: " + query);
+        log.log(Level.INFO, "Executing SQL query: {0}", query);
         Class resultType = method.getReturnType();
         Object result = null;
         try {
             result =  resultType.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            log.log(Level.SEVERE, "Cannot create new instance of type [" + resultType + "]");
+            log.log(Level.SEVERE, "Cannot create new instance of type [{0}]",  resultType );
         }
         return result;
     }
