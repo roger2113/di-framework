@@ -31,6 +31,7 @@ import static java.util.stream.Collectors.toList;
  *
  * for interfaces annotated with {@link Repository}
  * bean map returns proxy-object with {@link CRUDRepositoryInvocationHandler}
+ * or {@link com.makarov.core.proxy.CustomRepositoryInvocationHandler}
  *
  * In contrast to CGlib, JDK proxy implementation does not allow autowire proxy-object into bean property,
  * so real bean instances are autowired as beans dependencies,
@@ -73,7 +74,7 @@ public class ApplicationContext implements Context {
 
     /**
      * Because of JDK proxy constraints method returns bean proxy,
-     * but not its autowired bean dependencies are not proxy objects
+     * but its autowired bean dependencies are not proxy objects
      */
     @Override
     @SuppressWarnings("unchecked")
