@@ -5,12 +5,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import java.nio.file.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +33,7 @@ public class SimpleContextClassLoader implements ContextClassLoader {
                 while (resources.hasMoreElements()) {
                     URI packageRoot = resources.nextElement().toURI();
 
-                    for (File classFile : collectFiles(packageRoot)) {
+                    for (File classFile : collectFiles(getPath(packageRoot))) {
                         String fileName = classFile.getName();
                         String filePath = classFile.getPath();
 
@@ -55,6 +51,21 @@ public class SimpleContextClassLoader implements ContextClassLoader {
         return javaClasses;
     }
 
+    private PathReference getPath(URI resPath) throws IOException {
+        try {
+            // first try getting a path via existing file systems
+            return new PathReference(Paths.get(resPath), null);
+        } catch (final FileSystemNotFoundException e) {
+            /*
+             * not directly on file system, so then it's somewhere else (e.g.:
+             * JAR)
+             */
+            Map<String, ?> env = Collections.emptyMap();
+            FileSystem fs = FileSystems.newFileSystem(resPath, env);
+            return new PathReference(fs.provider().getPath(resPath), fs);
+        }
+    }
+
 
     /**
      * Method to collect all java class files from given URI,
@@ -63,10 +74,10 @@ public class SimpleContextClassLoader implements ContextClassLoader {
      * @param rootPath
      * @return
      */
-    private List<File> collectFiles(URI rootPath) {
+    private List<File> collectFiles(PathReference rootPath) {
         try {
             //because of java.nio.file.FileSystemNotFoundException when run .jar
-            return Files.walk(Paths.get(rootPath))
+            return Files.walk(rootPath.getPath())
                     .filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".class"))
                     .map(path -> new File(path.toUri()))
