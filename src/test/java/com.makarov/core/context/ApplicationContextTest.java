@@ -1,6 +1,7 @@
 package com.makarov.core.context;
 
 import com.makarov.common.exception.BeanNotFoundException;
+import com.makarov.core.proxy.jdk.ComponentInvocationHandler;
 import com.makarov.samples.applicationContextTestSamples.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class ApplicationContextTest {
 
     /**
      * Ensure proxy for given bean created,
-     * and {@link com.makarov.core.proxy.ComponentInvocationHandler#invoke(Object, Method, Object[])}
+     * and {@link ComponentInvocationHandler#invoke(Object, Method, Object[])}
      * applied "Proxy passed;" string to method invocation result
      *
      * JDK proxy not allows to create other than "...$//dProxy" objects,

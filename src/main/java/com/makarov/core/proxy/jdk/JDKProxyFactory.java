@@ -1,4 +1,4 @@
-package com.makarov.core.proxy;
+package com.makarov.core.proxy.jdk;
 
 import com.makarov.persistence.repository.CRUDRepository;
 

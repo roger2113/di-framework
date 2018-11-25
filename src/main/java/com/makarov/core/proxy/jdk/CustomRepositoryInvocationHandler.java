@@ -1,7 +1,6 @@
-package com.makarov.core.proxy;
+package com.makarov.core.proxy.jdk;
 
 import com.makarov.core.annotation.Repository;
-import com.makarov.core.context.ContextHandler;
 import com.makarov.persistence.repository.DefaultDynamicQueryRepository;
 import com.makarov.persistence.repository.DynamicQueryRepository;
 

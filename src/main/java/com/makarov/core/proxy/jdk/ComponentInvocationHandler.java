@@ -1,4 +1,4 @@
-package com.makarov.core.proxy;
+package com.makarov.core.proxy.jdk;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

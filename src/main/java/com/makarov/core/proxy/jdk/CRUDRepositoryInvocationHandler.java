@@ -1,7 +1,6 @@
-package com.makarov.core.proxy;
+package com.makarov.core.proxy.jdk;
 
 import com.makarov.core.annotation.Repository;
-import com.makarov.core.context.ContextHandler;
 import com.makarov.persistence.repository.CRUDRepository;
 import com.makarov.persistence.repository.DefaultCRUDRepository;
 
@@ -10,7 +9,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 

@@ -4,8 +4,8 @@ import com.makarov.common.LoggingConfiguration;
 import com.makarov.core.annotation.Autowired;
 import com.makarov.core.annotation.Repository;
 import com.makarov.core.context.loader.SimpleContextClassLoader;
-import com.makarov.core.proxy.CRUDRepositoryInvocationHandler;
-import com.makarov.core.proxy.JDKProxyFactory;
+import com.makarov.core.proxy.jdk.CRUDRepositoryInvocationHandler;
+import com.makarov.core.proxy.jdk.JDKProxyFactory;
 import com.makarov.common.exception.BeanNotFoundException;
 import com.makarov.common.exception.ContextInvocationException;
 import com.makarov.persistence.query.MethodSignatureBasedQueryResolver;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static com.makarov.core.annotation.AnnotationUtil.getBeanAnnotations;
-import static com.makarov.core.proxy.JDKProxyFactory.getRepositoryProxy;
+import static com.makarov.core.proxy.jdk.JDKProxyFactory.getRepositoryProxy;
 import static java.util.stream.Collectors.toList;
 
 /**
