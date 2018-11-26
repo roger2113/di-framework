@@ -1,13 +1,9 @@
 package com.makarov.core.proxy.cglib;
 
-import com.makarov.core.proxy.jdk.CRUDRepositoryInvocationHandler;
-import com.makarov.core.proxy.jdk.CustomRepositoryInvocationHandler;
-import com.makarov.core.proxy.jdk.ImplementedRepositoryInvocationHandler;
 import com.makarov.persistence.repository.CRUDRepository;
 import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 public class CGLibProxyFactory {
@@ -21,24 +17,25 @@ public class CGLibProxyFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getRepositoryProxy(Class<T> repositoryInterface, T targetRepository) {
-        Class[] repositoryInterfaces = new Class[]{repositoryInterface};
-        InvocationHandler invocationHandler;
+    public static <T> T getRepositoryInterfaceProxy(Class<T> repositoryInterface) {
+        MethodInterceptor methodInterceptor = extendsCRUDRepository(repositoryInterface) ?
+                new CRUDRepositoryMethodInterceptor() :
+                new CustomRepositoryMethodInterceptor();
 
+        Enhancer enhancer = new Enhancer();
+        enhancer.setInterfaces(new Class[]{repositoryInterface});
+        enhancer.setCallback(methodInterceptor);
 
-        if (targetRepository != null) {
-            invocationHandler = new ImplementedRepositoryInvocationHandler(targetRepository);
-        } else {
-            invocationHandler = extendsCRUDRepository(repositoryInterface) ?
-                    new CRUDRepositoryInvocationHandler() :
-                    new CustomRepositoryInvocationHandler();
-        }
+        return (T) enhancer.create();
+    }
 
-        return (T) Proxy.newProxyInstance(
-                repositoryInterface.getClassLoader(),
-                repositoryInterfaces,
-                invocationHandler
-        );
+    @SuppressWarnings("unchecked")
+    public static <T> T getRepositoryClassProxy(Class<T> repositoryClass) {
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(repositoryClass);
+        enhancer.setCallback(new ImplementedRepositoryMethodInterceptor());
+
+        return (T) enhancer.create();
     }
 
     private static boolean extendsCRUDRepository(Class<?> repositoryInterface) {
