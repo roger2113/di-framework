@@ -1,5 +1,6 @@
 package com.makarov.persistence;
 
+import com.makarov.common.exception.InvalidMethodSignature;
 import com.makarov.persistence.query.MethodSignatureBasedQueryResolver;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,12 +53,18 @@ public class MethodSignatureBasedQueryResolverTest {
         assertEquals("SELECT * FROM string WHERE id=1 OR model='Tuatara' AND price=2300.99;", query);
     }
 
+    @Test(expected = InvalidMethodSignature.class)
+    public void buildFrom_findByIdOrModelOrPrice_WithInadequateParamsQuantity() {
+        repository.findByIdOrModelOrPrice(1, "Tuatara");
+    }
+
 
     interface SampleRepository {
         String findById(Integer id);
         String findByModelAndPrice(String model, Double price);
         String findByModelOrPrice(String model, Double price);
         String findByIdOrModelAndPrice(Integer id, String model, Double price);
+        String findByIdOrModelOrPrice(Integer id, String model);
     }
 
     static class SampleInvocationHandler implements InvocationHandler {

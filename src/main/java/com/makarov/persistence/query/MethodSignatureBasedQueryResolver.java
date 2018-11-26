@@ -1,5 +1,6 @@
 package com.makarov.persistence.query;
 
+import com.makarov.common.exception.InvalidMethodSignature;
 import com.makarov.core.annotation.Component;
 
 import java.lang.reflect.Method;
@@ -9,16 +10,16 @@ import java.util.logging.Logger;
 /**
  * Class to resolve SQL query from given Method object and method arguments array
  * ! only methods of type "findBy...Or/And..." implemented
- *
- *  - table name is defined as lowercase of Method return Type simple name
- *  - logical expression 'WHERE' is defined as parameters, extracted from Method name,
- *    and consequentially concatenated with given arguments
- *
- *  For example:
- *             public Car findByPriceAndColor(Double priceValue, String colorValue)
- *             =
- *             SELECT * FROM car WHERE price=:priceValue AND color=:colorValue
- *
+ * <p>
+ * - table name is defined as lowercase of Method return Type simple name
+ * - logical expression 'WHERE' is defined as parameters, extracted from Method name,
+ * and consequentially concatenated with given arguments
+ * <p>
+ * For example:
+ * public Car findByPriceAndColor(Double priceValue, String colorValue)
+ * =
+ * SELECT * FROM car WHERE price=:priceValue AND color=:colorValue
+ * <p>
  * !!! Arguments have to be in the same order as params in method name
  */
 @Component
@@ -80,16 +81,16 @@ public class MethodSignatureBasedQueryResolver implements QueryResolver {
                 .replaceAll("[^\\d.]", "")
                 .toCharArray();
 
-        try {
-            for (int i = 0; i < queryParams.length; i++) {
-                condition
-                        .append(queryParams[i] + "=")
-                        .append(resolveQuotes(queryValues[i]))
-                        .append(i == queryParams.length - 1 ? "" : conditionalOperators[i] == '1' ? " AND " : " OR ");
-            }
-        } catch (IndexOutOfBoundsException e) {
-            log.log(Level.SEVERE, "Cannot build SQL query, params and arguments quantity do not match");
-            return "";
+        if (queryParams.length != queryValues.length) {
+            throw new InvalidMethodSignature(String.format(
+                    "Cannot build SQL query, params(%d) and arguments(%d) quantity do not match",
+                    queryParams.length, queryValues.length));
+        }
+        for (int i = 0; i < queryParams.length; i++) {
+            condition
+                    .append(queryParams[i] + "=")
+                    .append(resolveQuotes(queryValues[i]))
+                    .append(i == queryParams.length - 1 ? "" : conditionalOperators[i] == '1' ? " AND " : " OR ");
         }
         return condition.toString() + ";";
     }
